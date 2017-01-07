@@ -1,4 +1,5 @@
 'use strict';
+var mongoose = require('mongoose');
 
 var ReviewSchema = new mongoose.Schema({
   // _id (ObjectId, auto-generated)
@@ -7,5 +8,10 @@ var ReviewSchema = new mongoose.Schema({
   postedOn: Date,
   rating: Number,
   review: String
-    
+
 })
+
+
+
+var Review = mongoose.model('Review', ReviewSchema);
+module.exports = Review;

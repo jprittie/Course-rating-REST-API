@@ -1,4 +1,5 @@
 'use strict';
+var mongoose = require('mongoose');
 
 var CourseSchema = new mongoose.Schema({
   // _id (ObjectId, auto-generated)
@@ -14,6 +15,7 @@ var CourseSchema = new mongoose.Schema({
       description: String
     }
   ],
+  // reviews (Array of ObjectId values, _id values from the reviews collection)
   reviews : [{
     type: mongoose.Schema.Types.ObjectId
   }]
@@ -22,6 +24,5 @@ var CourseSchema = new mongoose.Schema({
 })
 
 
-// steps (Array of objects that include stepNumber (Number), title (String) and description
-// (String) properties)
-// reviews (Array of ObjectId values, _id values from the reviews collection)
+var Course = mongoose.model('Course', CourseSchema);
+module.exports = Course;
