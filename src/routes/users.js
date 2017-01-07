@@ -8,3 +8,7 @@ var router = express.Router();
 
 // POST /api/users 201
 // Creates a user, sets the Location header to "/", and returns no content
+
+
+
+module.exports = router;

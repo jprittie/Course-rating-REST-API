@@ -14,10 +14,10 @@ require('./models/users');
 // Require database
 require('./database');
 // Require routes
-// var routes = require('./routes');
-require('./routes/courses');
-require('./routes/reviews');
-require('./routes/users');
+var routes = require('./routes');
+// require('./routes/courses');
+// require('./routes/reviews');
+// require('./routes/users');
 
 
 // set port to 5000
@@ -30,7 +30,9 @@ app.use(jsonParser());
 
 // serve static files from the "public" folder
 app.use('/', express.static('public'));
-// app.use('/api', routes.course);
+
+// app.use('/api', routes);
+app.use('/api', routes.course);
 // app.use('/api', routes.review);
 // app.use('/api', routes.user);
 

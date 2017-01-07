@@ -9,3 +9,7 @@ var router = express.Router();
 
 // DELETE /api/courses/:courseId/reviews/:id 204
 // Deletes the specified review and returns no content
+
+
+
+module.exports = router;
