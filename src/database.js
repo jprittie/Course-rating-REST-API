@@ -12,7 +12,7 @@ mongoose.connect('mongodb://localhost/CourseRatingRESTAPI');
 var db = mongoose.connection;
 // Write message to console if there's a connection error
 db.on('error', function (err) {
-  console.error('Connection error:', err);
+  console.error('Connection error: ' + err);
 });
 
 // Write message to console once connection is successful
