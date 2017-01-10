@@ -7,7 +7,7 @@ var UserSchema = new mongoose.Schema({
   emailAddress: String,
   hashedPassword: String
 
-})
+});
 
 
 var User = mongoose.model('User', UserSchema);

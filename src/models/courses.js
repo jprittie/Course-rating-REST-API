@@ -1,10 +1,17 @@
 'use strict';
 var mongoose = require('mongoose');
+// not sure I need the following two lines
+var User = require('./users');
+var Review = require('./reviews');
 
 var CourseSchema = new mongoose.Schema({
   // _id (ObjectId, auto-generated)
-  // user (_id from the users collection)
+  // * add required properties
 
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  },
   title: String,
   description: String,
   estimatedTime: String,
@@ -17,11 +24,12 @@ var CourseSchema = new mongoose.Schema({
   ],
   // reviews (Array of ObjectId values, _id values from the reviews collection)
   reviews : [{
-    type: mongoose.Schema.Types.ObjectId
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Review'
   }]
 
 
-})
+});
 
 
 var Course = mongoose.model('Course', CourseSchema);
