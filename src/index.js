@@ -33,8 +33,8 @@ app.use('/', express.static('public'));
 
 // app.use('/api', routes);
 app.use('/api', routes.course);
-// app.use('/api', routes.review);
-// app.use('/api', routes.user);
+app.use('/api', routes.review);
+app.use('/api', routes.user);
 
 
 // Add a middleware function to catch 404 errors and forward an error to the global error handler.
