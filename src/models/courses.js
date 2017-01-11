@@ -12,8 +12,14 @@ var CourseSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
   },
-  title: String,
-  description: String,
+  title: {
+    type: String,
+    required: [true, 'Please enter a course title']
+  },
+  description: {
+    type: String,
+    required: [true, 'Please enter a course description']
+  },
   estimatedTime: String,
   materialsNeeded: String,
   steps: [
