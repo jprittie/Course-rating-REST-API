@@ -10,6 +10,7 @@ var UserSchema = new mongoose.Schema({
   },
   emailAddress: {
     type: String,
+    unique: true,
     required: [true, 'Email address is required']
   },
   hashedPassword: {
@@ -19,6 +20,15 @@ var UserSchema = new mongoose.Schema({
 
 });
 
+// hash password before saving to database
+UserSchema.pre('save', function(next){
+  var user = this;
+  bcrypt.hash(user.password, 10, function(err, hash){
+    if (err) return next(err);
+    user.hashedPassword = hash;
+    next();
+  });
+});
 
 var User = mongoose.model('User', UserSchema);
 module.exports = User;
