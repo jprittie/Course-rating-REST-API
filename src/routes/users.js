@@ -29,37 +29,25 @@ router.post('/users', function(req, res, next){
   // what is the Validator model that Patrick used?
 
   // create new user
-  var userData = new User();
+  var user = new User();
   // set form input as properties
-  userData.fullName = req.body.fullName;
-  userData.emailAddress = req.body.emailAddress;
-  userData.password = req.body.password;
-  // userData.confirmPassword = req.body.confirmPassword;
+  user.fullName = req.body.fullName;
+  user.emailAddress = req.body.emailAddress;
+  user.password = req.body.password;
+  // set password by calling mongoose instance method
+  user.setPassword(req.body.password);
 
-  // everyone used user.save here instead of user.create - why?
-  // also, Dave capped User
-  User.create(userData, function(error, user){
-    if (error) {
-      console.log(error);
-      return next(error);
-    } else {
-      res.status(201);
-      return res.redirect('/');
+
+  user.save(function(err) {
+    if (err) {
+      console.log(err)
+      // this is where validation gets tricky - one e.g. put validation in another file
     }
-
-
+    res.status(201);
+    res.location('/');
+    // Do I need res.end?
+    res.end();
   });
-
-
-  // user.save(function(err) {
-  //   if (err) {
-  //     console.log(err)
-  //     // this is where validation gets tricky - one e.g. put validation in another file
-  //   }
-  //   res.status(201);
-  //   res.location('/');
-  //   res.end();
-  // });
 
 });
 
