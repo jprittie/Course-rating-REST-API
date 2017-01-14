@@ -15,7 +15,7 @@ var auth = function (req, res, next){
   // try this without function - might be clearer how errors are handled
   // could also send validation message for user
   function unauthorised (res) {
-    return res.send(401);
+    return res.sendStatus(401);
   }
 
   // if the user, user.name or user.pass don't exist
