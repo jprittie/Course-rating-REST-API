@@ -34,7 +34,15 @@ var CourseSchema = new mongoose.Schema({
     ref: 'Review'
   }]
 
+});
 
+CourseSchema.virtual('overallRating').get(function(){
+  var ratingTotal = 0;
+  for (var i=0; i<this.reviews.length; i++){
+    ratingTotal += this.reviews[i].rating;
+  }
+  var averageRating = Math.round(ratingTotal/this.reviews.length);
+  return averageRating;
 });
 
 
