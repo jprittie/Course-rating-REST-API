@@ -1,11 +1,17 @@
 var express = require('express');
 var router = express.Router();
 var User = require('../models/users');
+var auth = require('../auth.js');
 
 
 // GET /api/users 200
 // Returns the currently authenticated user
-
+router.get('/users', auth, function (req, res, next) {
+  var authorizedUser = {};
+  authorizedUser.data = [];
+  authorizedUser.data.push(req.user);
+  res.json(authorizedUser);
+});
 
 // POST /api/users 201
 // Creates a user, sets the Location header to "/", and returns no content
