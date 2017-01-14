@@ -33,7 +33,7 @@ var CourseSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Review'
   }]
-
+  
 });
 
 CourseSchema.virtual('overallRating').get(function(){
@@ -42,6 +42,7 @@ CourseSchema.virtual('overallRating').get(function(){
     ratingTotal += this.reviews[i].rating;
   }
   var averageRating = Math.round(ratingTotal/this.reviews.length);
+
   return averageRating;
 });
 

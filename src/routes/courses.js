@@ -43,20 +43,27 @@ router.get('/courses/:id', function (req, res, next) {
     .populate('user', 'id')
     // run query against database
     .exec(function(err, course){
-      console.log(course);
+      // console.log(course);
       // if error, send to error handler
       if (err) return next(err);
       // format data for use in client-side app
-      var selectedCourse = {};
-      // but why do I need an array here and not in the route above?
-      selectedCourse.data = [];
-      selectedCourse.data.push(course);
-      // // send response
-      // // mason has a line here about virtuals
-      res.json(selectedCourse);
-    });
+      // var selectedCourse = {};
+      // // but why do I need an array here and not in the route above?
+      // selectedCourse.data = [];
+      // selectedCourse.data.push(course);
+      // // // send response
+      // // // mason has a line here about virtuals
+      // // res.json({
+      // //   data: [results.toJSON({ virtuals: true })]
+      // // });
+      // console.log(User.overallRating);
+      // res.json(selectedCourse.toJSON({ virtuals: true }) );
+      res.json({
+        data: [course.toJSON({ virtuals: true })]
+      });
 
-});
+  }); // ends findById
+}); // ends route
 
 // POST /api/courses 201
 // Creates a course, sets the Location header, and returns no content
