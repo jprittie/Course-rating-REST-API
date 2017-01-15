@@ -2,12 +2,10 @@
 
 var express = require('express');
 var router = express.Router();
-
 var Course = require('../models/courses');
 var User = require('../models/users');
 var Review = require('../models/reviews');
-// require auth
-// var auth = require('../auth.js');
+var auth = require('../auth.js');
 
 
 // * need to write universal middleware here for searches by ID?
@@ -28,16 +26,13 @@ router.get('/courses', function (req, res, next) {
 });
 
 
-// GET /api/course/:id 200 xxx
-
+// GET /api/course/:id 200
 // Returns all Course properties and related documents for the provided course ID
-// When returning a single course for the GET /api/courses/:id route, use Mongoose population to
-// load the related user and reviews documents.
 router.get('/courses/:id', function (req, res, next) {
 
   Course.findById(req.params.id)
     // can I combine these parameters in one populate function?
-    // load related reviews and user documents
+    // load related reviews and user documents with Mongoose population
     .populate('reviews')
     // do I need id here? and why?
     .populate('user', 'id')
@@ -66,10 +61,53 @@ router.get('/courses/:id', function (req, res, next) {
 }); // ends route
 
 // POST /api/courses 201
-// Creates a course, sets the Location header, and returns no content
+// Creates a course, sets the location header, and returns no content
+router.post('/courses', auth, function (req, res, next) {
+  var course = new Course(req.body);
+  // but make sure user cannot review their own course
 
+  // set the step numbers to be equal to their index in the course plus one
+  for (var i=0; i<course.steps.length; i++){
+    course.steps[i].stepNumber = i + 1;
+  }
+
+  // save new course
+  course.save(function (err) {
+    // must do a lot more with validation here
+    if (err) {
+      // must check if it is a validation error, and if not, send it to the error handler
+      console.log(err)
+      next(err);
+    }
+
+    res.sendStatus(201);
+    res.location('/courses/');
+    // Do I need res.end?
+    // res.end();
+  });
+});
 
 // PUT /api/courses/:id 204
 // Updates a course and returns no content
+router.put('/courses/:id', auth, function (req, res, next) {
+  // set the step numbers to be equal to their index in the course plus one
+  for (var i=0; i<course.steps.length; i++){
+    course.steps[i].stepNumber = i + 1;
+  }
+  // but, user should only be able to edit a course they created
+  // also, Patrick and Chris used req.course.update and runValidators: true
+  Course.findOneAndUpdate({_id: req.params.id}, req.body, function(err, results) {
+    if (err) {
+      // must check if it is a validation error, and if not, send it to the error handler
+      console.log(err)
+      next(err);
+    }
+
+    res.sendStatus(201);
+    res.location('/courses/');
+
+  });
+
+});
 
 module.exports = router;
