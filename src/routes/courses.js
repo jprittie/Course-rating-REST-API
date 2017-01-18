@@ -77,10 +77,10 @@ router.post('/courses', auth, function (req, res, next) {
     if (err) {
       // must check if it is a validation error, and if not, send it to the error handler
       console.log(err)
-      next(err);
+      return next(err);
     }
 
-    res.sendStatus(201);
+    return res.sendStatus(201);
     res.location('/courses/');
     // Do I need res.end?
     // res.end();
@@ -100,10 +100,10 @@ router.put('/courses/:id', auth, function (req, res, next) {
     if (err) {
       // must check if it is a validation error, and if not, send it to the error handler
       console.log(err)
-      next(err);
+      return next(err);
     }
 
-    res.sendStatus(201);
+    return res.sendStatus(201);
     res.location('/courses/');
 
   });
