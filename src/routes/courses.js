@@ -21,6 +21,8 @@ router.get('/courses', function (req, res, next) {
     allCourses.data = courses;
     // send response
     res.json(allCourses);
+    // Do I need res.end?
+    // res.end();
   });
 
 });
@@ -31,40 +33,38 @@ router.get('/courses', function (req, res, next) {
 router.get('/courses/:id', function (req, res, next) {
 
   Course.findById(req.params.id)
-    // can I combine these parameters in one populate function?
     // load related reviews and user documents with Mongoose population
     .populate('reviews')
     // do I need id here? and why?
     .populate('user', 'id')
     // run query against database
     .exec(function(err, course){
-      // console.log(course);
       // if error, send to error handler
       if (err) return next(err);
       // format data for use in client-side app
+
+      // but why do I need an array here and not in the route above?
       // var selectedCourse = {};
-      // // but why do I need an array here and not in the route above?
       // selectedCourse.data = [];
       // selectedCourse.data.push(course);
-      // // // send response
-      // // // mason has a line here about virtuals
-      // // res.json({
-      // //   data: [results.toJSON({ virtuals: true })]
-      // // });
-      // console.log(User.overallRating);
       // res.json(selectedCourse.toJSON({ virtuals: true }) );
+
+      // send response
       res.json({
         data: [course.toJSON({ virtuals: true })]
       });
+      // Do I need res.end?
+      // res.end();
 
   }); // ends findById
 }); // ends route
+
 
 // POST /api/courses 201
 // Creates a course, sets the location header, and returns no content
 router.post('/courses', auth, function (req, res, next) {
   var course = new Course(req.body);
-  // but make sure user cannot review their own course
+  // but make sure user cannot review their own course - as EE?
 
   // set the step numbers to be equal to their index in the course plus one
   for (var i=0; i<course.steps.length; i++){
@@ -95,6 +95,7 @@ router.put('/courses/:id', auth, function (req, res, next) {
     course.steps[i].stepNumber = i + 1;
   }
   // but, user should only be able to edit a course they created
+  // that part seems to be working?
   // also, Patrick and Chris used req.course.update and runValidators: true
   Course.findOneAndUpdate({_id: req.params.id}, req.body, function(err, results) {
     if (err) {
@@ -105,9 +106,12 @@ router.put('/courses/:id', auth, function (req, res, next) {
 
     return res.sendStatus(201);
     res.location('/courses/');
-
+    // do I need res.end?
+    // res.end();
   });
 
 });
+
+// Set your headers before res.json, res.send, res.end, etc. Also make sure to return if you are sending from an if statement.
 
 module.exports = router;
