@@ -22,12 +22,17 @@ var CourseSchema = new mongoose.Schema({
   },
   estimatedTime: String,
   materialsNeeded: String,
-  steps: [
-    { stepNumber: Number,
-      title: String,
-      description: String
+  steps: [{
+    stepNumber: Number,
+    title: {
+      type: String,
+      required: true
+    },
+    description: {
+      type: String,
+      required: true
     }
-  ],
+  }],
   // reviews (Array of ObjectId values, _id values from the reviews collection)
   reviews : [{
     type: mongoose.Schema.Types.ObjectId,
