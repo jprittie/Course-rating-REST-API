@@ -32,7 +32,7 @@ router.post('/users', function(req, res, next){
     });
   }
   // should also do a regex check here?
-  // what is the Validator model that Patrick used?
+
 
   // create new user
   var user = new User();
@@ -47,12 +47,13 @@ router.post('/users', function(req, res, next){
   user.save(function(err) {
     if (err) {
       console.log(err)
+      return next(err);
       // this is where validation gets tricky - one e.g. put validation in another file
     }
     res.status(201);
     res.location('/');
     // Do I need res.end?
-    res.end();
+    // res.end();
   });
 
 });
