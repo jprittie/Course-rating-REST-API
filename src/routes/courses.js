@@ -33,31 +33,29 @@ router.get('/courses', function (req, res, next) {
 router.get('/courses/:id', function (req, res, next) {
 
   Course.findById(req.params.id)
-    // load related reviews and user documents with Mongoose population
+    // Load related reviews and user documents with Mongoose population
     .populate('reviews')
-    // do I need id here? and why?
-    .populate('user', 'id')
-    // run query against database
+    .populate('user')
+    // Run query against database
     .exec(function(err, course){
-      // if error, send to error handler
+      // If error, send to error handler
       if (err) return next(err);
-      // format data for use in client-side app
 
-      // but why do I need an array here and not in the route above?
+      // Format data for use in client-side app
       // var selectedCourse = {};
       // selectedCourse.data = [];
       // selectedCourse.data.push(course);
       // res.json(selectedCourse.toJSON({ virtuals: true }) );
 
-      // send response
+      // Send response
       res.json({
         data: [course.toJSON({ virtuals: true })]
       });
       // Do I need res.end?
       // res.end();
 
-  }); // ends findById
-}); // ends route
+  }); // Ends findById
+}); // Ends route
 
 
 // POST /api/courses 201
