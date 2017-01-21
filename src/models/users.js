@@ -1,9 +1,9 @@
 'use strict';
 var mongoose = require('mongoose');
 var bcrypt = require('bcrypt');
+// Require validator module here for email validation
 
 var UserSchema = new mongoose.Schema({
-  // _id (ObjectId, auto-generated)
   fullName: {
     type: String,
     required: [true, 'Full name is required']
@@ -14,7 +14,8 @@ var UserSchema = new mongoose.Schema({
     required: [true, 'Email address is required']
   },
   hashedPassword: {
-    type: String,
+    type: String
+    // throws error when I use required - why?
     // required: true
   }
 
@@ -22,22 +23,11 @@ var UserSchema = new mongoose.Schema({
 
 var saltRounds = 10;
 UserSchema.methods.setPassword = function (password) {
-  // Update the User model to store the user's password as a hashed value.
+  // Update the User model to store the user's password as a salted & hashed value.
   var salt = bcrypt.genSaltSync(saltRounds);
   this.hashedPassword = bcrypt.hashSync(password, salt);
 };
 
-// I haven't salted password, but is that in requirements?
-// hash password before saving to database
-// UserSchema.pre('save', function(next){
-//   var user = this;
-//   bcrypt.hash(user.password, 10, function(err, hash){
-//     if (err) return next(err);
-//     user.hashedPassword = hash;
-//     console.log(user.hashedPassword);
-//     next();
-//   });
-// });
 
 var User = mongoose.model('User', UserSchema);
 module.exports = User;
