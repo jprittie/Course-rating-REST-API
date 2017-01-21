@@ -1,13 +1,9 @@
 'use strict';
 var mongoose = require('mongoose');
-// not sure I need the following two lines
-var User = require('./users');
-var Review = require('./reviews');
+
+// Must add further validation messages?
 
 var CourseSchema = new mongoose.Schema({
-  // _id (ObjectId, auto-generated)
-  // * add required properties
-
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
@@ -33,7 +29,6 @@ var CourseSchema = new mongoose.Schema({
       required: true
     }
   }],
-  // reviews (Array of ObjectId values, _id values from the reviews collection)
   reviews : [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Review'
@@ -41,6 +36,9 @@ var CourseSchema = new mongoose.Schema({
 
 });
 
+// Must ensure that course contains at least one step
+
+// Update the Course schema with an overallRating virtual property.
 CourseSchema.virtual('overallRating').get(function(){
   var ratingTotal = 0;
   for (var i=0; i<this.reviews.length; i++){
