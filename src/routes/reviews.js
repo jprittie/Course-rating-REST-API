@@ -26,7 +26,7 @@ router.post('/courses/:courseId/reviews', auth, function (req, res, next) {
       course.reviews.push(review);
       // Then save the course
       course.save(function (err) {
-      // if error pass to error handler
+      // If error pass to error handler
         if (err) return next(err);
       });
       // Then save the review
@@ -52,11 +52,7 @@ router.post('/courses/:courseId/reviews', auth, function (req, res, next) {
     });
 });
 
-    }
 
-
-
-});
 
 
 // DELETE /api/courses/:courseId/reviews/:id 204
