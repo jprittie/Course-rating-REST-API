@@ -29,7 +29,7 @@ router.get('/courses', function (req, res, next) {
 
 
 // GET /api/course/:id 200
-// Returns all Course properties and related documents for the provided course ID
+// Returns all course properties and related documents for the provided course ID
 router.get('/courses/:id', function (req, res, next) {
 
   Course.findById(req.params.id)
@@ -41,12 +41,6 @@ router.get('/courses/:id', function (req, res, next) {
       // If error, send to error handler
       if (err) return next(err);
 
-      // Format data for use in client-side app
-      // var selectedCourse = {};
-      // selectedCourse.data = [];
-      // selectedCourse.data.push(course);
-      // res.json(selectedCourse.toJSON({ virtuals: true }) );
-
       // Send response
       res.json({
         data: [course.toJSON({ virtuals: true })]
@@ -54,7 +48,7 @@ router.get('/courses/:id', function (req, res, next) {
       // Do I need res.end?
       // res.end();
 
-  }); // Ends findById
+  }); // Ends execute query
 }); // Ends route
 
 
@@ -62,9 +56,8 @@ router.get('/courses/:id', function (req, res, next) {
 // Creates a course, sets the location header, and returns no content
 router.post('/courses', auth, function (req, res, next) {
   var course = new Course(req.body);
-  // but make sure user cannot review their own course - as EE?
 
-  // set the step numbers to be equal to their index in the course plus one
+  // Set the step numbers to be equal to their index in the course plus one
   for (var i=0; i<course.steps.length; i++){
     course.steps[i].stepNumber = i + 1;
   }
@@ -88,7 +81,7 @@ router.post('/courses', auth, function (req, res, next) {
 // PUT /api/courses/:id 204
 // Updates a course and returns no content
 router.put('/courses/:id', auth, function (req, res, next) {
-  // set the step numbers to be equal to their index in the course plus one
+  // Set the step numbers to be equal to their index in the course plus one
   for (var i=0; i<course.steps.length; i++){
     course.steps[i].stepNumber = i + 1;
   }
@@ -104,7 +97,7 @@ router.put('/courses/:id', auth, function (req, res, next) {
 
     return res.sendStatus(201);
     res.location('/courses/');
-    // do I need res.end?
+    // Do I need res.end?
     // res.end();
   });
 
