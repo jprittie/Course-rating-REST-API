@@ -15,8 +15,7 @@ router.get('/users', auth, function (req, res, next) {
 
 // POST /api/users 201
 // Creates a user, sets the Location header to "/", and returns no content
-// The AngularJS application will send you password and confirmPassword values in the request
-// body when calling the POST /api/users route
+// The AngularJS app will send password and confirmPassword values in the request body
 router.post('/users', function(req, res, next){
   // Check that both password fields have been filled out
   if (!req.body.password || !req.body.confirmPassword) {
@@ -40,23 +39,39 @@ router.post('/users', function(req, res, next){
   user.fullName = req.body.fullName;
   user.emailAddress = req.body.emailAddress;
   user.password = req.body.password;
-  // set password by calling mongoose instance method
+  // Set password by calling mongoose instance method
   user.setPassword(req.body.password);
 
 
   user.save(function(err) {
+    // Handle validation errors so they can be used by Angular app
     if (err) {
-      console.log(err)
-      return next(err);
-      // this is where validation gets tricky - one e.g. put validation in another file
-    }
-    res.status(201);
-    res.location('/');
-    // Do I need res.end?
-    // res.end();
-  });
+      if (err.name === 'ValidationError') {
+        var errorArray = [];
 
-});
+        if (err.errors.fullName) {
+          errorArray.push({ code: 400, message: err.errors.fullName.message });
+        }
+
+        if (err.errors.emailAddress) {
+          errorArray.push({ code: 400, message: err.errors.emailAddress.message });
+        }
+
+        var errorMessages = { message: 'Validation Failed', errors: { property: errorArray } };
+        return res.status(400).json(errorMessages);
+
+      } else {
+        // If error is not a validation error, send to middleware error handler
+        return next(err);
+      }
+    } // Ends if (err)
+
+  return res.status(201).send();
+  res.location('/');
+
+  }); // Ends user.save
+
+}); // Ends POST users route
 
 
 module.exports = router;
