@@ -44,9 +44,8 @@ router.post('/courses/:courseId/reviews', auth, function (req, res, next) {
         // Send 201 status
         return res.sendStatus(201);
         // Sets location header
-        res.location('/courses/');
-        // res.location('/courses/' + course._id);
-        // res.end();
+        res.location('/courses/' + course._id);
+
       });
 
     });
@@ -64,10 +63,9 @@ router.delete('/courses/:courseId/reviews/:id', auth, function (req, res, next) 
     if (err) return next(err);
   });
 
-  // Chris deletes review from both Review and Course model, but I don't understand why that's necessary
+  // Is it necessary to delete review from both Review and Course model?
   // Perhaps because of timing - i.e., if I didn't use splice, I would have to put the following in the Review.remove callback for it to work
   Course.findById(req.params.courseId)
-    // do I need to re-populate course?
     .populate('user')
     .populate('reviews')
     .exec(function(err, course) {
@@ -84,7 +82,6 @@ router.delete('/courses/:courseId/reviews/:id', auth, function (req, res, next) 
 
   // Send 204 status
   return res.sendStatus(204);
-  // res.end();
 });
 
 
