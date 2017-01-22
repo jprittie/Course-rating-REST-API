@@ -22,11 +22,11 @@ var CourseSchema = new mongoose.Schema({
     stepNumber: Number,
     title: {
       type: String,
-      required: true
+      required: [true, 'Please enter a step title']
     },
     description: {
       type: String,
-      required: true
+      required: [true, 'Please enter a step description']
     }
   }],
   reviews : [{
