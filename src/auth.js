@@ -5,18 +5,15 @@ var basicAuth = require('basic-auth');
 var bcrypt = require('bcrypt');
 
 
-
 var auth = function (req, res, next){
 
-
-  // parse the Authorization header credentials
+  // Parse the Authorization header credentials
   var user = basicAuth(req);
 
-  // try this without function - might be clearer how errors are handled
-  // could also send validation message for user
+
   function unauthorised (res) {
     res.sendStatus(401);
-    // But user will never see these routes if they're not signed in, so I don't need an explicit error message?
+    // But user will never see these routes if they're not signed in, so I don't need a custom error message?
     res.json({"message": "Validation Failed",
               "errors":
                 {"property": [
@@ -33,7 +30,6 @@ var auth = function (req, res, next){
     return unauthorised(res);
   } else {
 
-    // maybe would be clearer if you called email parameter "result"
     User.findOne({emailAddress: user.name}, function (err, email) {
       if (err) return next(err);
       if (email) {
@@ -44,7 +40,7 @@ var auth = function (req, res, next){
           return unauthorised(res);
         }
       } else {
-        // if user isn't in database
+        // If user isn't in database
         return unauthorised(res);
       }
     });
