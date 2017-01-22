@@ -36,7 +36,16 @@ var CourseSchema = new mongoose.Schema({
 
 });
 
-// Must ensure that course contains at least one step
+// Ensure course contains at least one step
+CourseSchema.path('steps').validate(function (steps) {
+  if (!steps) {
+    return false;
+  } else if (steps.length === 0) {
+    return false;
+  }
+  return true;
+}, 'Course must have at least one step');
+
 
 // Update the Course schema with an overallRating virtual property.
 CourseSchema.virtual('overallRating').get(function(){
