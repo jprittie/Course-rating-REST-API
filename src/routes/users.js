@@ -18,25 +18,25 @@ router.get('/users', auth, function (req, res, next) {
 // The AngularJS application will send you password and confirmPassword values in the request
 // body when calling the POST /api/users route
 router.post('/users', function(req, res, next){
-  // check that both password fields have been filled out
+  // Check that both password fields have been filled out
   if (!req.body.password || !req.body.confirmPassword) {
-    // return validation error
+    // Return validation error
     return res.status(400).json({
       message: 'Validation Failed', errors: { property: [ { code: 400, message: 'Please fill out all fields.' } ] }
     });
-  // check that password and confirmPassword match
+  // Check that password and confirmPassword match
   } else if (req.body.password !== req.body.confirmPassword) {
     // return validation error
     return res.status(400).json({
       message: 'Validation Failed', errors: { property: [ { code: 400, message: 'Password fields do not match.' } ] }
     });
   }
-  // should also do a regex check here?
+  // This is where I would pass error message for invalid email?
 
 
-  // create new user
+  // Create new user
   var user = new User();
-  // set form input as properties
+  // Set form input as properties
   user.fullName = req.body.fullName;
   user.emailAddress = req.body.emailAddress;
   user.password = req.body.password;
