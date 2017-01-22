@@ -1,7 +1,7 @@
 'use strict';
 var mongoose = require('mongoose');
 var bcrypt = require('bcrypt');
-// Require validator module here for email validation
+var validator = require('validator');
 
 var UserSchema = new mongoose.Schema({
   fullName: {
@@ -27,6 +27,23 @@ UserSchema.methods.setPassword = function (password) {
   var salt = bcrypt.genSaltSync(saltRounds);
   this.hashedPassword = bcrypt.hashSync(password, salt);
 };
+
+// Validate email
+UserSchema.path('emailAddress').validate(function (v) {
+  return validator.isEmail(v);
+}, 'Please provide a valid email address.');
+
+// Ensure email is unique
+// Model already does this, but we should provide a custom validation error so the user knows what's wrong
+// UserSchema.path('emailAddress').validate(function (value, done) {
+//   this.model('User').count({ emailAddress: value }, function (err, count) {
+//     if (err) {
+//       return done(err);
+//     }
+//     // If count is greater than zero invalidate the request
+//     done(!count);
+//   });
+// }, 'This email address is already being used by another user.');
 
 
 var User = mongoose.model('User', UserSchema);
