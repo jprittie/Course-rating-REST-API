@@ -109,8 +109,8 @@ router.put('/courses/:id', auth, function (req, res, next) {
     course.steps[i].stepNumber = i + 1;
   }
 
-  // Need req.course.update and runValidators: true?
-  Course.findOneAndUpdate({_id: req.params.id}, req.body, function(err, results) {
+  // runValidators adds validation to updates
+  req.course.update(req.body, { runValidators: true }, function (err, course) {
     // If there's a validation error, format custom error for Angular app
     // But this is duplicated... put in reusable function
     if (err) {
@@ -146,8 +146,9 @@ router.put('/courses/:id', auth, function (req, res, next) {
       }
     } // Ends if (err)
 
-    return res.sendStatus(201);
-    res.location('/courses/');
+    // send 204 status
+    res.status(204);
+    res.end();
 
   });
 
