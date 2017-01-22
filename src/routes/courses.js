@@ -45,8 +45,6 @@ router.get('/courses/:id', function (req, res, next) {
       res.json({
         data: [course.toJSON({ virtuals: true })]
       });
-      // Do I need res.end?
-      // res.end();
 
   }); // Ends execute query
 }); // Ends route
@@ -62,19 +60,44 @@ router.post('/courses', auth, function (req, res, next) {
     course.steps[i].stepNumber = i + 1;
   }
 
-  // save new course
+  // Save new course
   course.save(function (err) {
-    // must do a lot more with validation here
+    // If there's a validation error, format custom error for Angular app
     if (err) {
-      // must check if it is a validation error, and if not, send it to the error handler
-      console.log(err)
-      return next(err);
-    }
+      if (err.name === 'ValidationError') {
+        var errorArray = [];
+
+        if (err.errors.title) {
+          errorArray.push({ code: 400, message: err.errors.title.message });
+        }
+
+        if (err.errors.description) {
+          errorArray.push({ code: 400, message: err.errors.description.message });
+        }
+
+        // if (err.errors.steps) {
+        //   errorArray.push({ code: 400, message: err.errors.steps.message });
+        // }
+
+        if (err.errors['steps.0.title']) {
+          errorArray.push({ code: 400, message: err.errors['steps.0.title'].message });
+        }
+
+        if (err.errors['steps.0.description']) {
+          errorArray.push({ code: 400, message: err.errors['steps.0.description'].message });
+        }  
+
+        var errorMessages = { message: 'Validation Failed', errors: { property: errorArray } };
+        return res.status(400).json(errorMessages);
+
+      } else {
+        // If error is not a validation error, send to middleware error handler
+        return next(err);
+      }
+    } // Ends if (err)
 
     return res.sendStatus(201);
     res.location('/courses/');
-    // Do I need res.end?
-    // res.end();
   });
 });
 
@@ -85,20 +108,47 @@ router.put('/courses/:id', auth, function (req, res, next) {
   for (var i=0; i<course.steps.length; i++){
     course.steps[i].stepNumber = i + 1;
   }
-  // but, user should only be able to edit a course they created
-  // that part seems to be working?
-  // also, Patrick and Chris used req.course.update and runValidators: true
+
+  // Need req.course.update and runValidators: true?
   Course.findOneAndUpdate({_id: req.params.id}, req.body, function(err, results) {
+    // If there's a validation error, format custom error for Angular app
+    // But this is duplicated... put in reusable function
     if (err) {
-      // must check if it is a validation error, and if not, send it to the error handler
-      console.log(err)
-      return next(err);
-    }
+      if (err.name === 'ValidationError') {
+        var errorArray = [];
+
+        if (err.errors.title) {
+          errorArray.push({ code: 400, message: err.errors.title.message });
+        }
+
+        if (err.errors.description) {
+          errorArray.push({ code: 400, message: err.errors.description.message });
+        }
+
+        // if (err.errors.steps) {
+        //   errorArray.push({ code: 400, message: err.errors.steps.message });
+        // }
+
+        if (err.errors['steps.0.title']) {
+          errorArray.push({ code: 400, message: err.errors['steps.0.title'].message });
+        }
+
+        if (err.errors['steps.0.description']) {
+          errorArray.push({ code: 400, message: err.errors['steps.0.description'].message });
+
+
+        var errorMessages = { message: 'Validation Failed', errors: { property: errorArray } };
+        return res.status(400).json(errorMessages);
+
+      } else {
+        // If error is not a validation error, send to middleware error handler
+        return next(err);
+      }
+    } // Ends if (err)
 
     return res.sendStatus(201);
     res.location('/courses/');
-    // Do I need res.end?
-    // res.end();
+
   });
 
 });
