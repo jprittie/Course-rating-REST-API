@@ -85,7 +85,7 @@ router.post('/courses', auth, function (req, res, next) {
 
         if (err.errors['steps.0.description']) {
           errorArray.push({ code: 400, message: err.errors['steps.0.description'].message });
-        }  
+        }
 
         var errorMessages = { message: 'Validation Failed', errors: { property: errorArray } };
         return res.status(400).json(errorMessages);
@@ -135,7 +135,7 @@ router.put('/courses/:id', auth, function (req, res, next) {
 
         if (err.errors['steps.0.description']) {
           errorArray.push({ code: 400, message: err.errors['steps.0.description'].message });
-
+        }
 
         var errorMessages = { message: 'Validation Failed', errors: { property: errorArray } };
         return res.status(400).json(errorMessages);
