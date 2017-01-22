@@ -1,7 +1,6 @@
 'use strict';
 var mongoose = require('mongoose');
 
-// Must add further validation messages?
 
 var CourseSchema = new mongoose.Schema({
   user: {
