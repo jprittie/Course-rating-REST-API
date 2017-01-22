@@ -15,7 +15,16 @@ var auth = function (req, res, next){
   // try this without function - might be clearer how errors are handled
   // could also send validation message for user
   function unauthorised (res) {
-    return res.sendStatus(401);
+    res.sendStatus(401);
+    // But user will never see these routes if they're not signed in, so I don't need an explicit error message?
+    res.json({"message": "Validation Failed",
+              "errors":
+                {"property": [
+                  { "code": "401",
+                  "message": "Not a valid user."
+                  }]
+                }
+            });
   }
 
   // if the user, user.name or user.pass don't exist
