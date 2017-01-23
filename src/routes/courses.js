@@ -33,20 +33,30 @@ router.get('/courses', function (req, res, next) {
 router.get('/courses/:id', function (req, res, next) {
 
   Course.findById(req.params.id)
-    // Load related reviews and user documents with Mongoose population
-    .populate('reviews')
+    // Load related reviews and user documents with Mongoose population and sub-population
     .populate('user')
+    .populate({
+      path: 'reviews',
+      model: 'Review',
+      populate: {
+        path: 'user',
+        model: 'User'
+      }
+    })
     // Run query against database
     .exec(function(err, course){
+      console.log(course);
+
       // If error, send to error handler
       if (err) return next(err);
 
-      // Send response
-      res.json({
-        data: [course.toJSON({ virtuals: true })]
-      });
+      var courseDetails = {};
+			courseDetails.data = [];
+			courseDetails.data.push(course.toObject({ virtuals: true }) );
+			res.json(courseDetails);
 
   }); // Ends execute query
+  // }); ends Review.find
 }); // Ends route
 
 
