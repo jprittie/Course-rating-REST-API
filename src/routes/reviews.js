@@ -16,9 +16,17 @@ router.post('/courses/:courseId/reviews', auth, function (req, res, next) {
   // Gets user from auth module
   review.user = req.user;
 
+  // Do I need to do sub-population here as well?
   Course.findById(req.params.courseId)
     .populate('user')
-    .populate('reviews')
+    .populate({
+      path: 'reviews',
+      model: 'Review',
+      populate: {
+        path: 'user',
+        model: 'User'
+      }
+    })
     .exec(function(err, course) {
       if (err) return next(err);
 
@@ -67,7 +75,14 @@ router.delete('/courses/:courseId/reviews/:id', auth, function (req, res, next) 
   // Perhaps because of timing - i.e., if I didn't use splice, I would have to put the following in the Review.remove callback for it to work
   Course.findById(req.params.courseId)
     .populate('user')
-    .populate('reviews')
+    .populate({
+      path: 'reviews',
+      model: 'Review',
+      populate: {
+        path: 'user',
+        model: 'User'
+      }
+    })
     .exec(function(err, course) {
       if (err) return next(err);
 
