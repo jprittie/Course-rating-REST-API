@@ -45,7 +45,7 @@ router.get('/courses/:id', function (req, res, next) {
     })
     // Run query against database
     .exec(function(err, course){
-      console.log(course);
+      // console.log(course);
 
       // If error, send to error handler
       if (err) return next(err);
