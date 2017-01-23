@@ -13,15 +13,6 @@ var auth = function (req, res, next){
 
   function unauthorised (res) {
     res.sendStatus(401);
-    // But user will never see these routes if they're not signed in, so I don't need a custom error message?
-    res.json({"message": "Validation Failed",
-              "errors":
-                {"property": [
-                  { "code": "401",
-                  "message": "Not a valid user."
-                  }]
-                }
-            });
   }
 
   // if the user, user.name or user.pass don't exist
