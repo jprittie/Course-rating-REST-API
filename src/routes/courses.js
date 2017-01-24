@@ -8,8 +8,6 @@ var Review = require('../models/reviews');
 var auth = require('../auth.js');
 
 
-// * need to write universal middleware here for searches by ID?
-
 // GET /api/courses 200
 router.get('/courses', function (req, res, next) {
   // Returns the Course "_id" and "title" properties
@@ -45,7 +43,6 @@ router.get('/courses/:id', function (req, res, next) {
     })
     // Run query against database
     .exec(function(err, course){
-      // console.log(course);
 
       // If error, send to error handler
       if (err) return next(err);
@@ -56,7 +53,6 @@ router.get('/courses/:id', function (req, res, next) {
 			res.json(courseDetails);
 
   }); // Ends execute query
-  // }); ends Review.find
 }); // Ends route
 
 
@@ -114,15 +110,12 @@ router.post('/courses', auth, function (req, res, next) {
 // PUT /api/courses/:id 204
 // Updates a course and returns no content
 router.put('/courses/:id', auth, function (req, res, next) {
-  // Set the step numbers to be equal to their index in the course plus one
-  for (var i=0; i<course.steps.length; i++){
-    course.steps[i].stepNumber = i + 1;
-  }
 
   // runValidators adds validation to updates
-  req.course.update(req.body, { runValidators: true }, function (err, course) {
+  Course.findOneAndUpdate({_id: req.params.id}, req.body, { runValidators: true }, function (err, course) {
     // If there's a validation error, format custom error for Angular app
     // But this is duplicated... put in reusable function
+
     if (err) {
       if (err.name === 'ValidationError') {
         var errorArray = [];
@@ -148,7 +141,7 @@ router.put('/courses/:id', auth, function (req, res, next) {
         }
 
         var errorMessages = { message: 'Validation Failed', errors: { property: errorArray } };
-        return res.status(400).json(errorMessages);
+        return res.sendStatus(400).json(errorMessages);
 
       } else {
         // If error is not a validation error, send to middleware error handler
@@ -157,8 +150,10 @@ router.put('/courses/:id', auth, function (req, res, next) {
     } // Ends if (err)
 
     // send 204 status
-    res.status(204);
-    res.end();
+
+    res.location('/courses/' + course._id);
+    return res.status(204);
+    // res.end();
 
   });
 
