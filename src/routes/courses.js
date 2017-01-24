@@ -114,7 +114,7 @@ router.put('/courses/:id', auth, function (req, res, next) {
   // runValidators adds validation to updates
   Course.findOneAndUpdate({_id: req.params.id}, req.body, { runValidators: true }, function (err, course) {
     // If there's a validation error, format custom error for Angular app
-    // But this is duplicated... put in reusable function
+    // But this is duplicated... put in reusable function?
 
     if (err) {
       if (err.name === 'ValidationError') {
@@ -151,7 +151,6 @@ router.put('/courses/:id', auth, function (req, res, next) {
 
     // send 204 status
 
-    res.location('/courses/' + course._id);
     return res.status(204);
     // res.end();
 
