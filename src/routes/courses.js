@@ -111,52 +111,61 @@ router.post('/courses', auth, function (req, res, next) {
 // Updates a course and returns no content
 router.put('/courses/:id', auth, function (req, res, next) {
 
-  // runValidators adds validation to updates
-  Course.findOneAndUpdate({_id: req.params.id}, req.body, { runValidators: true }, function (err, course) {
-    // If there's a validation error, format custom error for Angular app
-    // But this is duplicated... put in reusable function?
+  Course.findById(req.params.id)
+    // Run query against database
+    .exec(function(err, course){
 
-    if (err) {
-      if (err.name === 'ValidationError') {
-        var errorArray = [];
+      // If error, send to error handler
+      if (err) return next(err);
 
-        if (err.errors.title) {
-          errorArray.push({ code: 400, message: err.errors.title.message });
-        }
+      // why do I have req.course here? I could probably just do course.update
+      req.course = course;
+      // runValidators adds validation to updates
+      req.course.update(req.body, {runValidators: true}, function (err, course){
+      // req.course.update(req.body, function (err, course) {
 
-        if (err.errors.description) {
-          errorArray.push({ code: 400, message: err.errors.description.message });
-        }
+        // If there's a validation error, format custom error for Angular app
+        if (err) {
+          if (err.name === 'ValidationError') {
+            var errorArray = [];
 
-        // if (err.errors.steps) {
-        //   errorArray.push({ code: 400, message: err.errors.steps.message });
-        // }
+            if (err.errors.title) {
+              errorArray.push({ code: 400, message: err.errors.title.message });
+            }
 
-        if (err.errors['steps.0.title']) {
-          errorArray.push({ code: 400, message: err.errors['steps.0.title'].message });
-        }
+            if (err.errors.description) {
+              errorArray.push({ code: 400, message: err.errors.description.message });
+            }
 
-        if (err.errors['steps.0.description']) {
-          errorArray.push({ code: 400, message: err.errors['steps.0.description'].message });
-        }
+            // if (err.errors.steps) {
+            //   errorArray.push({ code: 400, message: err.errors.steps.message });
+            // }
 
-        var errorMessages = { message: 'Validation Failed', errors: { property: errorArray } };
-        return res.sendStatus(400).json(errorMessages);
+            if (err.errors['steps.0.title']) {
+              errorArray.push({ code: 400, message: err.errors['steps.0.title'].message });
+            }
 
-      } else {
-        // If error is not a validation error, send to middleware error handler
-        return next(err);
-      }
-    } // Ends if (err)
+            if (err.errors['steps.0.description']) {
+              errorArray.push({ code: 400, message: err.errors['steps.0.description'].message });
+            }
 
-    // send 204 status
+            var errorMessages = { message: 'Validation Failed', errors: { property: errorArray } };
+            return res.status(400).json(errorMessages);
 
-    return res.status(204);
-    // res.end();
+          } else {
+            // If error is not a validation error, send to middleware error handler
+            return next(err);
+          }
+        } // Ends if (err)
 
-  });
+        // Return response
+        return res.sendStatus(204);
 
-});
+      }); // Ends course.update
+
+    }); // Ends execute query
+
+  }); // Ends router.put
 
 // Set your headers before res.json, res.send, res.end, etc. Also make sure to return if you are sending from an if statement.
 
