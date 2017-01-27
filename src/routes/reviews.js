@@ -86,13 +86,24 @@ router.delete('/courses/:courseId/reviews/:id', auth, function (req, res, next) 
     .exec(function(err, course) {
       if (err) return next(err);
 
-      // Splice out the deleted review from course.reviews array
-      course.reviews.splice(course.reviews.indexOf(req.params.id), 1);
-      // Save the course
-      course.save(function (err) {
-        // If error send to error handler
-        if (err) return next(err);
-      });
+      // // Get current user.
+      // var currentUser = req.user._id.toJSON();
+      // // Get course owner.
+      // var courseOwner = course.user._id.toJSON();
+      // // Get review owner.
+      // var reviewOwner = review.user._id.toJSON();
+      //
+      // // Only the review's user or course owner can delete a review.
+      // if (currentUser === courseOwner || currentUser === reviewOwner) {
+        // Splice out the deleted review from course.reviews array
+        course.reviews.splice(course.reviews.indexOf(req.params.id), 1);
+        // Save the course
+        course.save(function (err) {
+          // If error send to error handler
+          if (err) return next(err);
+        });
+      // } // Ends if currentUser
+      
     });
 
   // Send 204 status
