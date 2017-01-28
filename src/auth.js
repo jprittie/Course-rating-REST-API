@@ -24,7 +24,7 @@ var auth = function (req, res, next){
     User.findOne({emailAddress: user.name}, function (err, email) {
       if (err) return next(err);
       if (email) {
-        if (bcrypt.compareSync(user.pass, email.hashedPassword)) {
+        if (bcrypt.compareSync(user.pass, email.password)) {
           req.user = email;
           return next();
         } else {
