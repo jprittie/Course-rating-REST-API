@@ -14,12 +14,12 @@ var UserSchema = new mongoose.Schema({
     required: [true, 'Email address is required']
   },
   password: {
-    type: String
-    // required: true
+    type: String,
+    required: true
   },
   confirmPassword: {
-    type: String
-    // required: true
+    type: String,
+    required: true
   }
   // hashedPassword: {
   //   type: String
