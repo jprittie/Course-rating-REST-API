@@ -13,20 +13,32 @@ var UserSchema = new mongoose.Schema({
     unique: true,
     required: [true, 'Email address is required']
   },
-  hashedPassword: {
+  password: {
     type: String
-    // throws error when I use required - why?
+    // required: true
+  },
+  confirmPassword: {
+    type: String
     // required: true
   }
+  // hashedPassword: {
+  //   type: String
+  //   // throws error when I use required - why?
+  //   // required: true
+  // }
 
 });
 
 var saltRounds = 10;
-UserSchema.methods.setPassword = function (password) {
+UserSchema.methods.setPassword = function (password, confirmPassword) {
   // Update the User model to store the user's password as a salted & hashed value.
   var salt = bcrypt.genSaltSync(saltRounds);
-  this.hashedPassword = bcrypt.hashSync(password, salt);
+  // this.hashedPassword = bcrypt.hashSync(password, salt);
+  this.password = bcrypt.hashSync(password, salt);
+  this.confirmPassword = bcrypt.hashSync(confirmPassword, salt);
 };
+
+
 
 // Validate email
 UserSchema.path('emailAddress').validate(function (v) {
