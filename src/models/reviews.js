@@ -23,6 +23,11 @@ var ReviewSchema = new mongoose.Schema({
 
 });
 
+// Round rating that user entered to nearest whole number
+ReviewSchema.pre('save', function(next) {
+  Math.round(this.rating);
+  next();
+});
 
 var Review = mongoose.model('Review', ReviewSchema);
 module.exports = Review;
