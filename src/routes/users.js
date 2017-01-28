@@ -1,3 +1,4 @@
+'use strict';
 var express = require('express');
 var router = express.Router();
 var User = require('../models/users');
@@ -39,8 +40,10 @@ router.post('/users', function(req, res, next){
   user.fullName = req.body.fullName;
   user.emailAddress = req.body.emailAddress;
   user.password = req.body.password;
-  // Set password by calling mongoose instance method
-  user.setPassword(req.body.password);
+  user.confirmPassword = req.body.confirmPassword;
+
+  // Hash and salt password and confirmPassword by calling mongoose instance method
+  user.setPassword(req.body.password, req.body.confirmPassword);
 
 
   user.save(function(err) {
