@@ -12,12 +12,12 @@ var auth = function (req, res, next){
 
 
   function unauthorised (res) {
-    res.sendStatus(401);
+    return res.sendStatus(401);
   }
 
-  // if the user, user.name or user.pass don't exist
+  // If the user, user.name or user.pass don't exist
   if (!user || !user.name || !user.pass) {
-    // return unauthorised
+    // Return unauthorised
     return unauthorised(res);
   } else {
 
