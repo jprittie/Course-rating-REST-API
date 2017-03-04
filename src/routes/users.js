@@ -24,15 +24,13 @@ router.post('/users', function(req, res, next){
     return res.status(400).json({
       message: 'Validation Failed', errors: { property: [ { code: 400, message: 'Please fill out all fields.' } ] }
     });
-  // Check that password and confirmPassword match
+  // Check whether password and confirmPassword match
   } else if (req.body.password !== req.body.confirmPassword) {
-    // return validation error
+    // Return validation error
     return res.status(400).json({
       message: 'Validation Failed', errors: { property: [ { code: 400, message: 'Password fields do not match.' } ] }
     });
   }
-  // This is where I would pass error message for invalid email?
-
 
   // Create new user
   var user = new User();
