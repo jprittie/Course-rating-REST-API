@@ -16,7 +16,6 @@ router.post('/courses/:courseId/reviews', auth, function (req, res, next) {
   // Gets user from auth module
   review.user = req.user;
 
-  // Do I need to do sub-population here as well?
   Course.findById(req.params.courseId)
     .populate('user')
     .populate({
@@ -29,7 +28,6 @@ router.post('/courses/:courseId/reviews', auth, function (req, res, next) {
     })
     .exec(function(err, course) {
       if (err) return next(err);
-
       course.reviews.push(review);
       // Then save the course
       course.save(function (err) {
@@ -45,7 +43,7 @@ router.post('/courses/:courseId/reviews', auth, function (req, res, next) {
               message: 'Validation Failed', errors: { property: [ { code: 400, message: err.errors.rating.message } ] }
             });
           } else {
-            // Send error to error handler
+            // Send error to middleware error handler
             return next(err);
           }
         }
@@ -60,8 +58,6 @@ router.post('/courses/:courseId/reviews', auth, function (req, res, next) {
 });
 
 
-
-
 // DELETE /api/courses/:courseId/reviews/:id 204
 // Deletes the specified review and returns no content
 router.delete('/courses/:courseId/reviews/:id', auth, function (req, res, next) {
@@ -71,8 +67,6 @@ router.delete('/courses/:courseId/reviews/:id', auth, function (req, res, next) 
     if (err) return next(err);
   });
 
-  // Is it necessary to delete review from both Review and Course model?
-  // Perhaps because of timing - i.e., if I didn't use splice, I would have to put the following in the Review.remove callback for it to work
   Course.findById(req.params.courseId)
     .populate('user')
     .populate({
@@ -86,15 +80,13 @@ router.delete('/courses/:courseId/reviews/:id', auth, function (req, res, next) 
     .exec(function(err, course) {
       if (err) return next(err);
 
-      // // Get current user.
-      // var currentUser = req.user._id.toJSON();
-      // // Get course owner.
-      // var courseOwner = course.user._id.toJSON();
-      // // Get review owner.
-      // var reviewOwner = review.user._id.toJSON();
-      //
-      // // Only the review's user or course owner can delete a review.
-      // if (currentUser === courseOwner || currentUser === reviewOwner) {
+      // Get current user, course owner and review owner
+      var currentUser = req.user._id.toJSON();
+      var courseOwner = course.user._id.toJSON();
+      var reviewOwner = review.user._id.toJSON();
+
+      // Only the review's user or course owner can delete a review
+      if (currentUser === courseOwner || currentUser === reviewOwner) {
         // Splice out the deleted review from course.reviews array
         course.reviews.splice(course.reviews.indexOf(req.params.id), 1);
         // Save the course
@@ -102,14 +94,12 @@ router.delete('/courses/:courseId/reviews/:id', auth, function (req, res, next) 
           // If error send to error handler
           if (err) return next(err);
         });
-      // } // Ends if currentUser
-      
+      } // Ends if currentUser
+
     });
 
   // Send 204 status
   return res.sendStatus(204);
 });
-
-
 
 module.exports = router;
