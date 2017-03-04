@@ -12,15 +12,13 @@ var auth = require('../auth.js');
 router.get('/courses', function (req, res, next) {
   // Returns the Course "_id" and "title" properties
   Course.find({}, '_id title', function (err, courses) {
-    // if error, send to error handler
+    // If error, send to middleware error handler
     if (err) return next(err);
-    // format data for use in client-side app
+    // Format data for use in client-side app
     var allCourses = {};
     allCourses.data = courses;
-    // send response
+    // Send response
     res.json(allCourses);
-    // Do I need res.end?
-    // res.end();
   });
 
 });
@@ -44,7 +42,7 @@ router.get('/courses/:id', function (req, res, next) {
     // Run query against database
     .exec(function(err, course){
 
-      // If error, send to error handler
+      // If error, send to middleware error handler
       if (err) return next(err);
 
       var courseDetails = {};
@@ -69,22 +67,21 @@ router.post('/courses', auth, function (req, res, next) {
   // Save new course
   course.save(function (err) {
 
-    // // Don't allow more than one review per user.
-    // for (var i = 0; i < course.reviews.length; i++) {
-    //   if (course.reviews[i].user.toJSON() === req.user._id.toJSON()) {
-    //     err = new Error("Sorry, you can only add one review per course.");
-    //     err.status = 401;
-    //     return next(err);
-    //   }
-    // }
-    //
-    // // Don't allow the course owner to post a review on their own course.
-    // if (req.user._id.toJSON() === course.user._id.toJSON()) {
-    //   err = new Error("Sorry, you can't review your own courses.");
-    //   err.status = 401;
-    //   return next(err);
-    // }
+    // Don't allow more than one review per user
+    for (var i=0; i < course.reviews.length; i++) {
+      if (course.reviews[i].user.toJSON() === req.user._id.toJSON()) {
+        err = new Error("Sorry, you can only add one review per course.");
+        err.status = 401;
+        return next(err);
+      }
+    }
 
+    // Don't allow the course owner to post a review on their own course
+    if (req.user._id.toJSON() === course.user._id.toJSON()) {
+      err = new Error("Sorry, you can't review your own courses.");
+      err.status = 401;
+      return next(err);
+    }
 
     // If there's a validation error, format custom error for Angular app
     if (err) {
@@ -147,11 +144,9 @@ router.put('/courses/:id', auth, function (req, res, next) {
         return next(err);
       } else {
 
-        // why do I have req.course here? I could probably just do course.update
         req.course = course;
         // runValidators adds validation to updates
         req.course.update(req.body, {runValidators: true}, function (err, course){
-        // req.course.update(req.body, function (err, course) {
 
           // If there's a validation error, format custom error for Angular app
           if (err) {
@@ -197,6 +192,5 @@ router.put('/courses/:id', auth, function (req, res, next) {
 
 }); // Ends router.put
 
-// Set your headers before res.json, res.send, res.end, etc. Also make sure to return if you are sending from an if statement.
 
 module.exports = router;
