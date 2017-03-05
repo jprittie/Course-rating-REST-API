@@ -28,27 +28,30 @@ router.post('/courses/:courseId/reviews', auth, function (req, res, next) {
     })
     .exec(function(err, course) {
 
-      // Don't allow the course owner to post a review on their own course
+      // // Don't allow the course owner to post a review on their own course
       if (req.user._id.toJSON() === course.user._id.toJSON()) {
-        // err = new Error("Sorry, you can't review your own courses.");
-        // err.status = 401;
-        // return next(err);
-        return res.sendStatus(401).json({
-          message: 'Authorization Failed', errors: { property: [ { code: 401, message: "Sorry, you can't review your own courses." } ] }
-        });
+        err = new Error("Sorry, you can't review your own courses.");
+        err.status = 401;
+        return next(err);
+        // return res.sendStatus(401).json({
+        //   message: 'Authorization Failed', errors: { property: [ { code: 401, message: "Sorry, you can't review your own courses." } ] }
+        // });
       }
 
       // Don't allow more than one review per user
       // Also, format this error for Angular app so user knows what's wrong
       for (var i=0; i<course.reviews.length; i++) {
         if (course.reviews[i].user._id.toJSON() === req.user._id.toJSON()) {
+          err = new Error("Sorry, you can only add one review per course.");
+          err.status = 401;
+          return next(err);
           // var errorArray = [];
           // errorArray.push({ code: 400, message: "Sorry, you can only add one review per course." });
           // var errorMessages = { message: 'Authorization Failed', errors: { property: errorArray } };
           // return res.sendStatus(400).json(errorMessages);
-          return res.sendStatus(401).json({
-            message: 'Authorization Failed', errors: { property: [ { code: 401, message: "Sorry, you can only add one review per course." } ] }
-          });
+          // return res.sendStatus(401).json({
+          //   message: 'Authorization Failed', errors: { property: [ { code: 401, message: "Sorry, you can only add one review per course." } ] }
+          // });
 
         }
       }
