@@ -14,7 +14,6 @@ router.post('/courses/:courseId/reviews', auth, function (req, res, next) {
   // Create new review with req.body
   var review = new Review(req.body);
   review.user = req.user;
-  // shouldn't this be req.user._id ?
 
   Course.findById(req.params.courseId)
     .populate('user')
@@ -27,6 +26,7 @@ router.post('/courses/:courseId/reviews', auth, function (req, res, next) {
       }
     })
     .exec(function(err, course) {
+      if (err) return next (err);
 
       // // Don't allow the course owner to post a review on their own course
       if (req.user._id.toJSON() === course.user._id.toJSON()) {
@@ -36,7 +36,6 @@ router.post('/courses/:courseId/reviews', auth, function (req, res, next) {
       }
 
       // Don't allow more than one review per user
-      // Also, format this error for Angular app so user knows what's wrong
       for (var i=0; i<course.reviews.length; i++) {
         if (course.reviews[i].user._id.toJSON() === req.user._id.toJSON()) {
           err = new Error("Sorry, you can only add one review per course.");
@@ -54,8 +53,7 @@ router.post('/courses/:courseId/reviews', auth, function (req, res, next) {
       });
 
       // Then save the review
-      // review.save(function(err) {
-      review.save(req.body, {runValidators: true}, function(err){
+      review.save(function(err) {
         if (err) {
           // Check for validation errors
           if (err.name === 'ValidationError') {
@@ -67,11 +65,11 @@ router.post('/courses/:courseId/reviews', auth, function (req, res, next) {
             return next(err);
           }
         }
-        // Send 201 status
-        res.sendStatus(201);
+        // Set 201 status
+        res.status(201);
         // Sets location header
-        res.location('/courses/' + course._id);
-        res.end()
+        res.location('/courses/' + req.params.courseId);
+        res.end();
       });
 
     });
@@ -119,8 +117,9 @@ router.delete('/courses/:courseId/reviews/:id', auth, function (req, res, next) 
           return res.sendStatus(204);
 
         } else {
-          var error = new Error('Sorry, only the review creator or course creator can delete a review.');
-          return res.sendStatus(401);
+          var err = new Error('Sorry, only the review creator or course creator can delete a review.');
+          err.status = 401;
+          return next(err);
         }
 
       }); // Ends exec query

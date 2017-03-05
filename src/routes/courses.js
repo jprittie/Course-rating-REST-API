@@ -102,8 +102,9 @@ router.post('/courses', auth, function (req, res, next) {
       }
     } // Ends if (err)
 
-    return res.sendStatus(201);
     res.location('/courses/');
+    return res.sendStatus(201);
+
   });
 });
 

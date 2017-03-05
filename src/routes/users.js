@@ -67,8 +67,9 @@ router.post('/users', function(req, res, next){
       }
     } // Ends if (err)
 
+  res.location('/');  
   return res.status(201).send();
-  res.location('/');
+
 
   }); // Ends user.save
 
