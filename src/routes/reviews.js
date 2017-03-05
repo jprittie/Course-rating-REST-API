@@ -14,6 +14,7 @@ router.post('/courses/:courseId/reviews', auth, function (req, res, next) {
   // Create new review with req.body
   var review = new Review(req.body);
   review.user = req.user;
+  // shouldn't this be req.user._id ?
 
   Course.findById(req.params.courseId)
     .populate('user')
@@ -26,48 +27,46 @@ router.post('/courses/:courseId/reviews', auth, function (req, res, next) {
       }
     })
     .exec(function(err, course) {
-      if (err) return next(err);
-      // console.log(course);
-      console.log(req.user._id);
-
-      // Don't allow more than one review per user
-      for (var i=0; i<course.reviews.length; i++) {
-        if (course.reviews[i].user._id.toJSON() === req.user._id.toJSON()) {
-          err = new Error("Sorry, you can only add one review per course.");
-          err.status = 401;
-          return next(err);
-        }
-      }
 
       // Don't allow the course owner to post a review on their own course
       if (req.user._id.toJSON() === course.user._id.toJSON()) {
-        err = new Error("Sorry, you can't review your own courses.");
-        err.status = 401;
-        return next(err);
+        // err = new Error("Sorry, you can't review your own courses.");
+        // err.status = 401;
+        // return next(err);
+        return res.sendStatus(401).json({
+          message: 'Authorization Failed', errors: { property: [ { code: 401, message: "Sorry, you can't review your own courses." } ] }
+        });
       }
+
+      // Don't allow more than one review per user
+      // Also, format this error for Angular app so user knows what's wrong
+      for (var i=0; i<course.reviews.length; i++) {
+        if (course.reviews[i].user._id.toJSON() === req.user._id.toJSON()) {
+          // var errorArray = [];
+          // errorArray.push({ code: 400, message: "Sorry, you can only add one review per course." });
+          // var errorMessages = { message: 'Authorization Failed', errors: { property: errorArray } };
+          // return res.sendStatus(400).json(errorMessages);
+          return res.sendStatus(401).json({
+            message: 'Authorization Failed', errors: { property: [ { code: 401, message: "Sorry, you can only add one review per course." } ] }
+          });
+
+        }
+      }
+
 
 
       course.reviews.push(review);
       // Then save the course
       course.save(function (err) {
-        if (err) {
-          // Check for validation errors
-          if (err.name === 'ValidationError') {
-            return res.status(400).json({
-              message: 'Validation Failed', errors: { property: [ { code: 400, message: err.errors.rating.message } ] }
-            });
-          } else {
-            // Send error to middleware error handler
-            return next(err);
-          }
-        }
+        if (err) return next(err);
       });
+
       // Then save the review
       review.save(function(err) {
         if (err) {
           // Check for validation errors
           if (err.name === 'ValidationError') {
-            return res.status(400).json({
+            return res.sendStatus(400).json({
               message: 'Validation Failed', errors: { property: [ { code: 400, message: err.errors.rating.message } ] }
             });
           } else {
