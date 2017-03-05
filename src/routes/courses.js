@@ -57,55 +57,60 @@ router.get('/courses/:id', function (req, res, next) {
 // POST /api/courses 201
 // Creates a course, sets the location header, and returns no content
 router.post('/courses', auth, function (req, res, next) {
-  var course = new Course(req.body);
 
-  // Set the step numbers to be equal to their index in the course plus one
-  for (var i=0; i<course.steps.length; i++){
-    course.steps[i].stepNumber = i + 1;
+  // Only let current user create courses for themselves
+  if (req.body.user._id === req.user._id.toJSON()) {
+    var course = new Course(req.body);
+
+    // Set the step numbers to be equal to their index in the course plus one
+    for (var i=0; i<course.steps.length; i++){
+      course.steps[i].stepNumber = i + 1;
+    }
+
+    // Save new course
+    course.save(function (err) {
+      // If there's a validation error, format custom error for Angular app
+      if (err) {
+        if (err.name === 'ValidationError') {
+          var errorArray = [];
+
+          if (err.errors.title) {
+            errorArray.push({ code: 400, message: err.errors.title.message });
+          }
+
+          if (err.errors.description) {
+            errorArray.push({ code: 400, message: err.errors.description.message });
+          }
+
+          // if (err.errors.steps) {
+          //   errorArray.push({ code: 400, message: err.errors.steps.message });
+          // }
+
+          if (err.errors['steps.0.title']) {
+            errorArray.push({ code: 400, message: err.errors['steps.0.title'].message });
+          }
+
+          if (err.errors['steps.0.description']) {
+            errorArray.push({ code: 400, message: err.errors['steps.0.description'].message });
+          }
+
+          var errorMessages = { message: 'Validation Failed', errors: { property: errorArray } };
+          return res.status(400).json(errorMessages);
+
+        } else {
+          // If error is not a validation error, send to middleware error handler
+          return next(err);
+        }
+      } // Ends if (err)
+
+      res.location('/courses/');
+      return res.sendStatus(201);
+    }); // ends course.save
+  } else {
+    var err = new Error("Sorry, you can only create a course for yourself.");
+    err.status = 401;
+    return next(err);
   }
-
-  // Save new course
-  course.save(function (err) {
-
-
-    // If there's a validation error, format custom error for Angular app
-    if (err) {
-      if (err.name === 'ValidationError') {
-        var errorArray = [];
-
-        if (err.errors.title) {
-          errorArray.push({ code: 400, message: err.errors.title.message });
-        }
-
-        if (err.errors.description) {
-          errorArray.push({ code: 400, message: err.errors.description.message });
-        }
-
-        // if (err.errors.steps) {
-        //   errorArray.push({ code: 400, message: err.errors.steps.message });
-        // }
-
-        if (err.errors['steps.0.title']) {
-          errorArray.push({ code: 400, message: err.errors['steps.0.title'].message });
-        }
-
-        if (err.errors['steps.0.description']) {
-          errorArray.push({ code: 400, message: err.errors['steps.0.description'].message });
-        }
-
-        var errorMessages = { message: 'Validation Failed', errors: { property: errorArray } };
-        return res.status(400).json(errorMessages);
-
-      } else {
-        // If error is not a validation error, send to middleware error handler
-        return next(err);
-      }
-    } // Ends if (err)
-
-    res.location('/courses/');
-    return res.sendStatus(201);
-
-  });
 });
 
 // PUT /api/courses/:id 204
