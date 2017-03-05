@@ -67,22 +67,6 @@ router.post('/courses', auth, function (req, res, next) {
   // Save new course
   course.save(function (err) {
 
-    // Don't allow more than one review per user
-    for (var i=0; i < course.reviews.length; i++) {
-      if (course.reviews[i].user.toJSON() === req.user._id.toJSON()) {
-        err = new Error("Sorry, you can only add one review per course.");
-        err.status = 401;
-        return next(err);
-      }
-    }
-
-    // Don't allow the course owner to post a review on their own course
-    if (req.user._id.toJSON() === course.user._id.toJSON()) {
-      err = new Error("Sorry, you can't review your own courses.");
-      err.status = 401;
-      return next(err);
-    }
-
     // If there's a validation error, format custom error for Angular app
     if (err) {
       if (err.name === 'ValidationError') {
