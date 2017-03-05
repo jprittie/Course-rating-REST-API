@@ -67,6 +67,7 @@ router.post('/courses', auth, function (req, res, next) {
   // Save new course
   course.save(function (err) {
 
+
     // If there's a validation error, format custom error for Angular app
     if (err) {
       if (err.name === 'ValidationError') {
@@ -111,15 +112,13 @@ router.post('/courses', auth, function (req, res, next) {
 router.put('/courses/:id', auth, function (req, res, next) {
 
   Course.findById(req.params.id)
+    .populate('user')
     // Run query against database
     .exec(function(err, course){
 
-      // If error, send to error handler
-      if (err) return next(err);
-
       // Only allow course owner to update course
       var user = req.user._id.toJSON();
-      var courseOwner = course.user.toJSON();
+      var courseOwner = course.user._id.toJSON();
       var authorized = (user === courseOwner);
 
       if (!authorized) {

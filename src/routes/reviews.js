@@ -33,9 +33,6 @@ router.post('/courses/:courseId/reviews', auth, function (req, res, next) {
         err = new Error("Sorry, you can't review your own courses.");
         err.status = 401;
         return next(err);
-        // return res.sendStatus(401).json({
-        //   message: 'Authorization Failed', errors: { property: [ { code: 401, message: "Sorry, you can't review your own courses." } ] }
-        // });
       }
 
       // Don't allow more than one review per user
@@ -45,14 +42,6 @@ router.post('/courses/:courseId/reviews', auth, function (req, res, next) {
           err = new Error("Sorry, you can only add one review per course.");
           err.status = 401;
           return next(err);
-          // var errorArray = [];
-          // errorArray.push({ code: 400, message: "Sorry, you can only add one review per course." });
-          // var errorMessages = { message: 'Authorization Failed', errors: { property: errorArray } };
-          // return res.sendStatus(400).json(errorMessages);
-          // return res.sendStatus(401).json({
-          //   message: 'Authorization Failed', errors: { property: [ { code: 401, message: "Sorry, you can only add one review per course." } ] }
-          // });
-
         }
       }
 
@@ -65,11 +54,12 @@ router.post('/courses/:courseId/reviews', auth, function (req, res, next) {
       });
 
       // Then save the review
-      review.save(function(err) {
+      // review.save(function(err) {
+      review.save(req.body, {runValidators: true}, function(err){
         if (err) {
           // Check for validation errors
           if (err.name === 'ValidationError') {
-            return res.sendStatus(400).json({
+            return res.status(400).json({
               message: 'Validation Failed', errors: { property: [ { code: 400, message: err.errors.rating.message } ] }
             });
           } else {
@@ -78,10 +68,10 @@ router.post('/courses/:courseId/reviews', auth, function (req, res, next) {
           }
         }
         // Send 201 status
-        return res.sendStatus(201);
+        res.sendStatus(201);
         // Sets location header
         res.location('/courses/' + course._id);
-
+        res.end()
       });
 
     });
@@ -129,9 +119,8 @@ router.delete('/courses/:courseId/reviews/:id', auth, function (req, res, next) 
           return res.sendStatus(204);
 
         } else {
-          var error = new Error('Sorry, only the review owner or course owner can delete a review.');
-          res.sendStatus(401);
-          return next(error);
+          var error = new Error('Sorry, only the review creator or course creator can delete a review.');
+          return res.sendStatus(401);
         }
 
       }); // Ends exec query
