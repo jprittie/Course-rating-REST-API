@@ -14,7 +14,7 @@ db.on('error', function (err) {
 
 // Write message to console once connection is successful
 db.once('open', function() {
-  require('./seed');
+  // require('./seed');
   console.log("Connection successfully opened!");
 
   // need db.close()?
