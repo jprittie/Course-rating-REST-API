@@ -11,30 +11,30 @@ routes, along with Mongoose and MongoDB for data modeling, validation, and persi
 
 ### Specific instructions:
 
-#### Your REST API will include two main resources, “courses” and “users,” containing the following routes:
-* /api/courses: GET - Returns a list of courses, POST - Creates a course
-* /api/courses/:id: GET - Returns a single course, PUT - Updates a course
-* /api/courses/:courseId/reviews: POST - Creates a review for the specified course
-* /api/courses/:courseId/reviews/:id: DELETE - Deletes a review
-* /api/users: POST - Creates a user
-* /api/users/: GET - Returns the current user
+#### * Your REST API will include two main resources, “courses” and “users,” containing the following routes:
+* /api/courses — GET returns a list of courses, POST creates a course
+* /api/courses/:id — GET returns a single course, PUT updates a course
+* /api/courses/:courseId/reviews — POST creates a review for the specified course
+* /api/courses/:courseId/reviews/:id — DELETE removes a review
+* /api/users — POST creates a user
+* /api/users/ — GET returns the current user
 
 
-#### Set up error handlers:
+#### * Set up error handlers:
 * Add a global error handler middleware function that writes error information to the response in the
 JSON format.
 * Add a middleware function to catch 404 errors and forward an error to the global error handler.
 
-#### Set up a database connection using Mongoose:
+#### * Set up a database connection using Mongoose:
 * Write a message to the console if there's an error connecting to the database.
 * Write a message to the console once the connection has been successfully opened.
 
-#### Create Mongoose schemas and models according to detailed specifications
-#### Seed the database with data
-#### Update the Course schema with an overallRating virtual property
-#### Update the User model to store the user's password as a hashed value
-#### Add validation to your Mongoose schemas, according to detailed specifications
-#### Set up basic authentication:
+#### * Create Mongoose schemas and models according to detailed specifications
+#### * Seed the database with data
+#### * Update the Course schema with an overallRating virtual property
+#### * Update the User model to store the user's password as a hashed value
+#### * Add validation to your Mongoose schemas, according to detailed specifications
+#### * Set up basic authentication:
 * The AngularJS application will send an Authorization header with each request when a user is
 * signed in.
 * You can use the basic-auth npm package to parse the `Authorization' header into the user's
@@ -42,7 +42,7 @@ credentials.
 * Add a middleware function that attempts to get the user credentials from the request.
 * Update all routes that require authentication to check for the current user and return a 401 HTTP
 status code if not available.
-#### Add the following permissions:
+#### * Add the following permissions:
 * Don't allow anything other than the current user's information to be returned from the GET
 /api/users route.
 * Don't allow anyone other than the current user to add/edit courses.
